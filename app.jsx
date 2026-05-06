@@ -592,7 +592,7 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
         value={topic} onChange={(e) => setTopic(e.target.value)}
         placeholder={
         isOne ?
-        "請用開放式問法（How / What / Why），例：「三個月的感情發展？」" :
+        "請用開放式問法（How / What / Why）\n例：「三個月的感情發展？」" :
         isLove ?
         "可以說明特別想知道的事，例：「要如何與對方拉近距離？」\n如有特殊情況可簡要說明，但無需分享現況或個人感受。" :
         isChoice ?

@@ -883,8 +883,9 @@ textarea.q-input { min-height: 90px; resize: vertical; }
   .q-col-narrow { flex: 1; width: 100%; }
   .q-col .q-label { white-space: normal; }
   .q-label { font-size: 12px; margin-bottom: 0; margin-top: 2px; }
-  .q-input { font-size: 14px; padding: 8px 12px; }
-  textarea.q-input { min-height: 56px; }
+  .q-input { font-size: 13px; padding: 8px 12px; line-height: 1.5; }
+  .q-input::placeholder { font-size: 12px; line-height: 1.5; }
+  textarea.q-input { min-height: 64px; }
   .one-count-input { font-size: 16px !important; padding: 8px 12px !important; }
   .q-warn { font-size: 11px; line-height: 1.5; padding: 8px 10px; margin-top: 4px; margin-bottom: 0; }
   .q-hint { font-size: 11px; margin-top: 2px; }
