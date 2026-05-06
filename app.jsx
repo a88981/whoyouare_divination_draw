@@ -327,7 +327,7 @@ function Hero({ onStart }) {
         <img src="logo.png" alt="我只是想知道" style={{ objectFit: "contain", width: "480px", height: "480px" }} />
       </div>
       <h1 className="hero-title" style={{ fontSize: "25px" }}>
-        我只是想知道<span className="hero-x"> × </span>占卜抽牌網站
+        我只是想知道<span className="hero-x"> × </span>線上抽牌
       </h1>
       <p className="lede">
         我們來到「占卜」面前，尋找的，<br />
