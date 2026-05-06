@@ -136,6 +136,7 @@ body {
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 11px 28px;
+  white-space: nowrap;
   font-family: var(--serif);
   font-size: 14px;
   font-weight: 500;
@@ -291,7 +292,7 @@ body {
   font-size: 12px;
   margin-left: 4px;
 }
-.q-label .required {
+.required {
   color: var(--accent);
   font-size: 14px;
   margin-left: 4px;
@@ -326,7 +327,7 @@ body {
 }
 .hero-title {
   font-family: var(--serif);
-  font-size: 26px;
+  font-size: clamp(20px, 3.2vw, 26px);
   font-weight: 400;
   letter-spacing: .18em;
   color: var(--ink);
@@ -588,7 +589,8 @@ textarea.q-input { min-height: 90px; resize: vertical; }
   font-size: 14px;
   color: var(--ink);
 }
-.meta-cell { display: inline-flex; align-items: baseline; gap: 8px; }
+.meta-cell { display: inline-flex; align-items: baseline; gap: 8px; text-wrap: pretty; }
+.meta-cell .sheet-meta-k { white-space: nowrap; }
 
 /* chip selector */
 .chip-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
@@ -660,6 +662,7 @@ textarea.q-input { min-height: 90px; resize: vertical; }
 .sheet-question-v {
   font-family: var(--serif); font-size: 15px;
   color: var(--ink); line-height: 1.7;
+  text-wrap: pretty;
 }
 
 /* board: absolute-positioned cards & labels */
@@ -736,6 +739,7 @@ textarea.q-input { min-height: 90px; resize: vertical; }
 .reveal-tip {
   text-align: center;
   margin-top: 18px;
+  text-wrap: pretty;
   font-family: var(--serif);
   font-size: 13px;
   color: var(--ink-soft);

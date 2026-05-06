@@ -160,7 +160,7 @@ function App() {
       flashTextarea("partner-name");
       return;
     }
-    if (!topic.trim()) {
+    if (spreadKey === "one" && !topic.trim()) {
       flashTextarea("topic");
       return;
     }
@@ -559,27 +559,10 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
           </React.Fragment>
         }
 
-        <label className="q-label">想知道的事 ✦</label>
-        <textarea id="topic" className="q-input" rows={3}
-        value={topic} onChange={(e) => setTopic(e.target.value)}
-        placeholder={
-        isChoice ?
-        "例：我目前在 A 和 B 之間猶豫該選哪個" :
-        "例：這三個月的感情發展如何？"
-        } />
-        <div className="q-hint">
-          請用開放式問法（How / What / Why）
-        </div>
-        <div className="q-warn">
-          <div>⚠ 為了維持牌面解讀的調查性，請僅描述您的問題。</div>
-          <div>⚠ 如有特殊情況可簡要說明，但無需分享現況或個人感受。</div>
-        </div>
-
         {isChoice &&
         <div className="branches">
             <div className="branches-head">
-              <span>你的選項</span>
-              <span className="branches-meta" style={{ color: "rgb(232, 160, 74)" }}>{branchCount} 選 1 · 最多 4 選 1</span>
+              <span>你的選項 <span className="required">✦</span></span>
             </div>
             {Array.from({ length: branchCount }).map((_, i) =>
           <div key={i} className="branch-row">
@@ -598,11 +581,31 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
           )}
             {branchCount < 4 &&
           <button className="branch-add" onClick={addBranch}>
-                ＋ 加一個選項（每多一組 +3 張牌）
+                ＋ 加一個選項
               </button>
           }
           </div>
         }
+
+        <label className="q-label">{isOne ? <React.Fragment>你的問題 <span className="required">✦</span></React.Fragment> : "想知道的事 & 說明 ✦"}</label>
+        <textarea id="topic" className="q-input" rows={3}
+        value={topic} onChange={(e) => setTopic(e.target.value)}
+        placeholder={
+        isOne ?
+        "請用開放式問法（How / What / Why），例：「三個月的感情發展？」" :
+        isLove ?
+        "可以說明特別想知道的事，例：「要如何與對方拉近距離？」\n如有特殊情況可簡要說明，但無需分享現況或個人感受。" :
+        isChoice ?
+        "可以說明特別想知道的事，例：「想知道A選項的人際互動」\n如有特殊情況可簡要說明，但無需分享現況或個人感受。" :
+        "可以說明特別想知道的事，例：「想知道在公司的人際發展」\n如有特殊情況可簡要說明，但無需分享現況或個人感受。"
+        } />
+        {isOne &&
+        <div className="q-warn">
+              <div>⚠ 為了維持牌面解讀的調查性，請僅描述您的問題。</div>
+              <div>⚠ 如有特殊情況可簡要說明，但無需分享現況或個人感受。</div>
+            </div>
+        }
+
       </div>
 
       <div className="stage-actions">
@@ -776,7 +779,7 @@ function RevealStage({ spreadKey, layout, cards, topic, luckyNumber, branches, n
 
         {topic &&
         <div className="sheet-question">
-            <span className="sheet-question-k">想知道的事</span>
+            <span className="sheet-question-k">{spreadKey === "one" ? "你的問題" : "想知道的事"}</span>
             <span className="sheet-question-v">{topic}</span>
           </div>
         }
@@ -847,8 +850,8 @@ function RevealStage({ spreadKey, layout, cards, topic, luckyNumber, branches, n
         <button className="btn lg" onClick={downloadImage} disabled={downloading}>
           {downloading ? "產生圖片中⋯" : "儲存結果"}
         </button>
-        <a className="btn ghost" href="https://www.instagram.com/yufangzhong/" target="_blank" rel="noreferrer">
-          傳給小玩
+        <a className="btn ghost" href="https://www.instagram.com/whoyouare_divination/" target="_blank" rel="noreferrer">
+          傳送結果
         </a>
         <button className="btn cream" onClick={onReset}>↻ 重新抽牌</button>
       </div>
