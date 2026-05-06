@@ -494,14 +494,22 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
             </div>
           </div> :
 
-        <div className="q-row">
-            <div className="q-col">
+        <div className={"q-row" + (isLove ? " q-row-love" : "")}>
+            <div className="q-col q-col-name">
               <label className="q-label">你的暱稱 <span className="required">✦</span></label>
               <input id="name" className="q-input" value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="例：小玩" required />
             </div>
-            <div className="q-col q-col-narrow">
+            {isLove &&
+            <div className="q-col q-col-partner">
+              <label className="q-label">對方的暱稱 <span className="required">✦</span></label>
+              <input id="partner-name" className="q-input" value={partnerName}
+                onChange={(e) => setPartnerName(e.target.value)}
+                placeholder="例：A 先生" required />
+            </div>
+            }
+            <div className="q-col q-col-narrow q-col-num">
               <label className="q-label">心中想一個數字 <span className="required">✦</span> <span className="optional">(01–99)</span></label>
               <input type="number" min="1" max="99" id="lucky-number"
             className="q-input one-count-input"
@@ -519,11 +527,6 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
 
         {isLove &&
         <React.Fragment>
-            <label className="q-label">對方的暱稱 <span className="required">✦</span></label>
-            <input id="partner-name" className="q-input" value={partnerName}
-          onChange={(e) => setPartnerName(e.target.value)}
-          placeholder="例：A 先生" required />
-
             <label className="q-label">與對方的感情狀態</label>
             <div className="chip-rows">
               <div className="chip-row">
