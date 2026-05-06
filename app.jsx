@@ -136,8 +136,8 @@ function App() {
   const [deck, setDeck] = useState([]);
   const [pickedIds, setPickedIds] = useState([]);
 
-  const need = getCardCount(spreadKey, branchCount);
-  const layout = useMemo(() => buildLayout(spreadKey, branchCount), [spreadKey, branchCount]);
+  const need = getCardCount(spreadKey, branchCount, oneCount);
+  const layout = useMemo(() => buildLayout(spreadKey, branchCount, oneCount), [spreadKey, branchCount, oneCount]);
 
   function gotoSpread() {
     setStep("spread");
@@ -646,16 +646,69 @@ function PickStage({ deck, need, pickedIds, onPick }) {
   const cards = deck;
   const remaining = need - pickedIds.length;
   const stageRef = React.useRef(null);
+  const [hoverId, setHoverId] = React.useState(null);
 
   React.useEffect(() => {
+    function onMove(e) {
+      const t = e.touches ? e.touches[0] : e;
+      if (!t) return;
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const card = el && el.closest && el.closest('.fan-card');
+      if (card && !card.classList.contains('picked')) {
+        const id = card.dataset.cardId;
+        setHoverId(id || null);
+      }
+    }
+    function onEnd() { setHoverId(null); }
+    const stage = stageRef.current;
+    if (!stage) return;
+    stage.addEventListener('touchmove', onMove, { passive: true });
+    stage.addEventListener('touchstart', onMove, { passive: true });
+    stage.addEventListener('touchend', onEnd);
+    stage.addEventListener('touchcancel', onEnd);
+    return () => {
+      stage.removeEventListener('touchmove', onMove);
+      stage.removeEventListener('touchstart', onMove);
+      stage.removeEventListener('touchend', onEnd);
+      stage.removeEventListener('touchcancel', onEnd);
+    };
+  }, []);
+
+  React.useLayoutEffect(() => {
     const el = stageRef.current;
     if (!el) return;
-    // Center the scroll position on mount
-    const inner = el.querySelector('.fan-inner');
-    if (inner) {
-      const sl = (inner.offsetWidth - el.clientWidth) / 2;
-      el.scrollLeft = Math.max(0, sl);
+    function center() {
+      const inner = el.querySelector('.fan-inner');
+      if (!inner) return;
+      // Find actual center of the fan by averaging extreme card positions
+      const cards = el.querySelectorAll('.fan-card');
+      if (cards.length === 0) return;
+      const innerRect = inner.getBoundingClientRect();
+      let minL = Infinity, maxR = -Infinity;
+      cards.forEach(c => {
+        const r = c.getBoundingClientRect();
+        if (r.left < minL) minL = r.left;
+        if (r.right > maxR) maxR = r.right;
+      });
+      const fanCenterX = (minL + maxR) / 2 - innerRect.left;
+      const targetScroll = fanCenterX - el.clientWidth / 2;
+      el.scrollLeft = Math.max(0, targetScroll);
     }
+    center();
+    const r1 = requestAnimationFrame(() => { center(); requestAnimationFrame(center); });
+    const t1 = setTimeout(center, 50);
+    const t2 = setTimeout(center, 200);
+    const t3 = setTimeout(center, 500);
+    const t4 = setTimeout(center, 1000);
+    const t5 = setTimeout(center, 2000);
+    window.addEventListener('resize', center);
+    window.addEventListener('load', center);
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5);
+      window.removeEventListener('resize', center);
+      window.removeEventListener('load', center);
+    };
   }, []);
 
   return (
@@ -672,14 +725,16 @@ function PickStage({ deck, need, pickedIds, onPick }) {
           const offset = i - center;
           const angle = offset * 1.25;
           const x = offset * 16;
-          const y = Math.abs(offset) * 0.45;
+          const y = -Math.abs(offset) * 0.45;
           const isPicked = pickedIds.includes(card.id);
+          const isHover = hoverId === String(card.id);
           return (
             <div key={card.id}
-            className={`fan-card fan-card-h ${isPicked ? "picked" : ""}`}
+            data-card-id={card.id}
+            className={`fan-card fan-card-h ${isPicked ? "picked" : ""} ${isHover ? "touch-hover" : ""}`}
             style={{
               transform: `translate(${x}px, ${y}px) rotate(${angle}deg) ${isPicked ? "translateY(-30px)" : ""}`,
-              zIndex: 50 + i
+              zIndex: isHover ? 200 : 50 + i
             }}
             onClick={() => onPick(card)}
             dangerouslySetInnerHTML={{ __html: window.CardArt.cardBack(card.id) }} />);

@@ -532,7 +532,7 @@ textarea.q-input { min-height: 90px; resize: vertical; }
   transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
 }
-.fan-card:hover { filter: brightness(1.08); z-index: 100 !important; }
+.fan-card:hover, .fan-card.touch-hover { filter: brightness(1.08); z-index: 100 !important; }
 .fan-card.picked { pointer-events: none; opacity: .35; filter: grayscale(.4); }
 .pick-tip {
   text-align: center;
@@ -809,7 +809,7 @@ textarea.q-input { min-height: 90px; resize: vertical; }
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 760px) {
+@media (max-width: 1024px) {
   body { -webkit-text-size-adjust: 100%; }
   .nav { padding: 10px 14px; position: relative; }
   .nav-burger { display: flex; }
@@ -899,41 +899,44 @@ textarea.q-input { min-height: 90px; resize: vertical; }
   .btn-row { gap: 8px; flex-wrap: nowrap; justify-content: center; }
   .btn-row .btn { padding: 10px 14px; font-size: 12px; flex: 1; min-width: 0; justify-content: center; text-align: center; }
 
-  /* Fan stage — fixed-width fan inside scrollable wrapper, starts centered */
-  .stage-pick { overflow: visible; }
+  /* Fan stage — mobile: scrollable, full fan visible */
+  .stage-pick {
+    overflow: hidden;
+    margin-left: calc(-1 * (50vw - 50%));
+    margin-right: calc(-1 * (50vw - 50%));
+    width: 100vw;
+    border-radius: 0;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
   .fan-stage {
-    height: 230px;
-    margin-left: -14px;
-    margin-right: -14px;
+    height: 280px;
     overflow-x: auto;
     overflow-y: hidden;
-    transform: none;
     -webkit-overflow-scrolling: touch;
-    display: block;
-    position: relative;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    background: var(--cream-1);
   }
   .fan-stage::-webkit-scrollbar { display: none; }
   .fan-inner {
     position: relative;
-    width: 620px;
-    height: 230px;
-    margin: 0 auto;
-  }
-  .fan-card-h {
-    width: 76px !important;
-    height: 119px !important;
-    left: calc(50% - 38px);
-    top: 50px !important;
-    margin-left: 0 !important;
-    margin-top: 0 !important;
+    width: 985px;
+    height: 280px;
+    margin: 0;
+    background: var(--cream-1);
   }
   .fan-card {
-    /* mobile: cards are positioned by left:calc(...) + JS transform; reset desktop centering */
-    margin-left: 0 !important;
-    margin-top: 0 !important;
-    top: 50px !important;
+    left: 492.5px !important;
   }
-  .fan-card-h .card-back-img { width: 119px; height: 76px; }
+  .fan-card-h {
+    width: 100px !important;
+    height: 154px !important;
+    margin-left: -50px !important;
+    margin-top: -77px !important;
+  }
+  .fan-card-h .card-back-img { width: 154px; height: 100px; }
   .pick-tip { font-size: 11px; margin-top: 10px; }
   .pick-instructions { font-size: 13px; }
   .pick-count { font-size: 10px; }
