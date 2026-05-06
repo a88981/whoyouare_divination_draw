@@ -324,10 +324,10 @@ function Hero({ onStart }) {
   return (
     <section className="hero">
       <div className="hero-orb">
-        <img src="logo.png" alt="我只是想知道" style={{ objectFit: "contain", width: "480px", height: "480px" }} />
+        <img src="logo.png" alt="我只是想知道" className="hero-logo-img" />
       </div>
       <h1 className="hero-title" style={{ fontSize: "25px" }}>
-        我只是想知道<span className="hero-x"> × </span>線上抽牌
+        我只是想知道<span className="hero-x"> ✦ </span>線上抽牌
       </h1>
       <p className="lede">
         我們來到「占卜」面前，尋找的，<br />
