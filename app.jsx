@@ -273,8 +273,6 @@ function App() {
         }
       </section>
 
-      {showHome && <Footer />}
-
       <TweaksPanel title="Tweaks">
         <TweakSection title="外觀">
           <TweakColor label="主色"
@@ -290,16 +288,37 @@ function App() {
 /* ---------------- Nav / Hero / Footer ---------------- */
 
 function Nav({ showLogo = true, onStart, onHome }) {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  function close() { setMenuOpen(false); }
+
   return (
     <nav className="nav">
       <div className="brand" onClick={onHome} style={{ cursor: onHome ? "pointer" : "default" }}>
         {showLogo && <img src="logo.png" alt="" className="brand-logo" />}
         <span className="brand-name" style={{ fontFamily: "\"Noto Serif TC\"", fontWeight: "600", fontSize: "15px", color: "rgb(145, 115, 55)" }}>我只是想知道 ✦ 心靈牌卡<em></em></span>
       </div>
-      <div className="nav-links">
-        <a href="#top" onClick={(e) => {e.preventDefault();if (onStart) onStart();else window.scrollTo({ top: 0, behavior: "smooth" });}}>開始抽牌</a>
-        <a href="https://whoyouare-divination.vercel.app/#services" target="_blank" rel="noreferrer">占卜方案</a>
-        <a href="https://www.instagram.com/whoyouare_divination/" target="_blank" rel="noreferrer" className="nav-ig">
+      <button
+        className={"nav-burger" + (menuOpen ? " open" : "")}
+        aria-label="Menu"
+        onClick={() => setMenuOpen((v) => !v)}>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <div className={"nav-links" + (menuOpen ? " open" : "")}>
+        <a href="#top" onClick={(e) => {e.preventDefault();close();if (onStart) onStart();else window.scrollTo({ top: 0, behavior: "smooth" });}}>開始抽牌</a>
+        <a href="https://whoyouare-divination.vercel.app/#services" target="_blank" rel="noreferrer" onClick={close}>占卜方案</a>
+        <a href="https://www.instagram.com/whoyouare_divination/" target="_blank" rel="noreferrer" className="nav-ig" onClick={close}>
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
             <circle cx="12" cy="12" r="4"></circle>
@@ -307,7 +326,7 @@ function Nav({ showLogo = true, onStart, onHome }) {
           </svg>
           我只是想知道
         </a>
-        <a href="https://www.instagram.com/yufangzhong/" target="_blank" rel="noreferrer" className="nav-ig">
+        <a href="https://www.instagram.com/yufangzhong/" target="_blank" rel="noreferrer" className="nav-ig" onClick={close}>
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
             <circle cx="12" cy="12" r="4"></circle>
@@ -540,7 +559,7 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
           </React.Fragment>
         }
 
-        <label className="q-label">想問的事 ✦</label>
+        <label className="q-label">想知道的事 ✦</label>
         <textarea id="topic" className="q-input" rows={3}
         value={topic} onChange={(e) => setTopic(e.target.value)}
         placeholder={
@@ -549,10 +568,11 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
         "例：這三個月的感情發展如何？"
         } />
         <div className="q-hint">
-          建議用開放式問法（How / What / Why） · 不能問：生死 / 官司 / 健康 / 投資
+          請用開放式問法（How / What / Why）
         </div>
         <div className="q-warn">
-          ⚠ 為了保持占卜的客觀性，只需告知問題即可，不需分享事件現況或個人想法，避免干擾牌面解讀，特殊情況可額外補充（無須提太多細節）。
+          <div>⚠ 為了維持牌面解讀的調查性，請僅描述您的問題。</div>
+          <div>⚠ 如有特殊情況可簡要說明，但無需分享現況或個人感受。</div>
         </div>
 
         {isChoice &&
@@ -619,6 +639,18 @@ function PickStage({ deck, need, pickedIds, onPick }) {
   const total = deck.length; // all 48
   const cards = deck;
   const remaining = need - pickedIds.length;
+  const stageRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    // Center the scroll position on mount
+    const inner = el.querySelector('.fan-inner');
+    if (inner) {
+      const sl = (inner.offsetWidth - el.clientWidth) / 2;
+      el.scrollLeft = Math.max(0, sl);
+    }
+  }, []);
 
   return (
     <div className="stage stage-pick">
@@ -627,13 +659,14 @@ function PickStage({ deck, need, pickedIds, onPick }) {
         <div className="pick-count">已選 {pickedIds.length} / {need} · 還需要 {remaining} 張</div>
       </div>
 
-      <div className="fan-stage">
+      <div className="fan-stage" ref={stageRef}>
+        <div className="fan-inner">
         {cards.map((card, i) => {
           const center = (total - 1) / 2;
           const offset = i - center;
-          const angle = offset * 1.0;
-          const x = offset * 11;
-          const y = Math.abs(offset) * 0.3;
+          const angle = offset * 1.25;
+          const x = offset * 16;
+          const y = Math.abs(offset) * 0.45;
           const isPicked = pickedIds.includes(card.id);
           return (
             <div key={card.id}
@@ -647,9 +680,10 @@ function PickStage({ deck, need, pickedIds, onPick }) {
 
 
         })}
+        </div>
       </div>
 
-      <div className="pick-tip">點一下牌就會抽出</div>
+      <div className="pick-tip">✦ 左右滑動抽牌 ✦</div>
     </div>);
 
 }
@@ -733,66 +767,64 @@ function RevealStage({ spreadKey, layout, cards, topic, luckyNumber, branches, n
       <div className="reveal-sheet" ref={sheetRef} style={{ backgroundColor: "rgba(255, 251, 240, 0.8)" }}>
         <div className="sheet-header">
           <div className="sheet-meta-row" style={{ fontSize: "15px" }}>
-            <div className="meta-cell"><span className="sheet-meta-k">暱稱</span> {name || "—"}{spreadKey === "love" && partnerName ? ` ＆ ${partnerName}` : ""}</div>
-            {luckyNumber && <div className="meta-cell"><span className="sheet-meta-k">數字</span> {String(luckyNumber).padStart(2, "0")}</div>}
-            <div className="meta-cell"><span className="sheet-meta-k">牌陣</span> {SPREADS[spreadKey].label}{spreadKey === "work" ? ` · ${workType}` : ""}{spreadKey === "love" ? ` · ${loveState}` : ""}</div>
-            <div className="meta-cell"><span className="sheet-meta-k">日期</span> {new Date().toLocaleDateString("zh-TW")}</div>
-          </div>
-          <div className="sheet-brand">
-            <img src="logo.png" alt="" />
-            <div>
-              <div className="sheet-brand-name">小玩的心靈牌卡占卜</div>
-              <div className="sheet-brand-en">whoyouare divination</div>
-            </div>
+            <div className="meta-cell meta-name"><span className="sheet-meta-k">暱稱</span> {name || "—"}{spreadKey === "love" && partnerName ? ` ＆ ${partnerName}` : ""}</div>
+            {luckyNumber && <div className="meta-cell meta-num"><span className="sheet-meta-k">數字</span> {String(luckyNumber).padStart(2, "0")}</div>}
+            <div className="meta-cell meta-spread"><span className="sheet-meta-k">牌陣</span> {SPREADS[spreadKey].label}{spreadKey === "work" ? ` · ${workType}` : ""}{spreadKey === "love" ? ` · ${loveState}` : ""}</div>
+            <div className="meta-cell meta-date"><span className="sheet-meta-k">日期</span> {new Date().toLocaleDateString("zh-TW")}</div>
           </div>
         </div>
 
         {topic &&
         <div className="sheet-question">
-            <span className="sheet-question-k">想問的事</span>
+            <span className="sheet-question-k">想知道的事</span>
             <span className="sheet-question-v">{topic}</span>
           </div>
         }
 
         <div className="sheet-board" style={{ width: layout.w, height: layout.h }}>
-          {layout.groups.map((g, gi) =>
-          g.title ?
-          <div key={gi} className="board-label"
-          style={{ left: g.x, top: g.y, width: g.w }}>
-                <span className="board-label-num">{String(gi + 1).padStart(2, "0")}</span>
-                <span className="board-label-text">{labelDisplay[gi]}</span>
-              </div> :
-          null
-          )}
-
-          {layout.slots.map((slot, i) => {
-            const card = cards[i];
-            if (!card) return null;
-            const isFlipped = flipped[card.id];
+          {layout.groups.map((g, gi) => {
+            // Cards belonging to this group
+            const groupSlots = layout.slots
+              .map((slot, i) => ({ slot, card: cards[i], i }))
+              .filter(({ slot }) => slot.group === gi);
             return (
-              <div key={i}
-              className={`board-card ${isFlipped ? "flipped" : ""}`}
-              style={{
-                left: slot.x, top: slot.y,
-                width: CARD_W, height: CARD_H
-              }}
-              onClick={() => {
-                if (!isFlipped) {
-                  setFlipped((prev) => ({ ...prev, [card.id]: true }));
-                } else {
-                  setZoomCard(card);
-                }
-              }}>
-                
-                <div className="board-card-flipper">
-                  <div className="board-card-face board-card-back"
-                  dangerouslySetInnerHTML={{ __html: window.CardArt.cardBack(card.id) }} />
-                  <div className="board-card-face board-card-front">
-                    <img src={card.src} alt={`card ${card.num}`} />
+              <div key={gi} className="board-group" data-group={gi}>
+                {g.title && (
+                  <div className="board-label"
+                    style={{ left: g.x, top: g.y, width: g.w }}>
+                    <span className="board-label-num">{String(gi + 1).padStart(2, "0")}</span>
+                    <span className="board-label-text">{labelDisplay[gi]}</span>
                   </div>
-                </div>
-              </div>);
-
+                )}
+                {groupSlots.map(({ slot, card, i }) => {
+                  if (!card) return null;
+                  const isFlipped = flipped[card.id];
+                  return (
+                    <div key={i}
+                      className={`board-card ${isFlipped ? "flipped" : ""}`}
+                      style={{
+                        left: slot.x, top: slot.y,
+                        width: CARD_W, height: CARD_H
+                      }}
+                      onClick={() => {
+                        if (!isFlipped) {
+                          setFlipped((prev) => ({ ...prev, [card.id]: true }));
+                        } else {
+                          setZoomCard(card);
+                        }
+                      }}>
+                      <div className="board-card-flipper">
+                        <div className="board-card-face board-card-back"
+                          dangerouslySetInnerHTML={{ __html: window.CardArt.cardBack(card.id) }} />
+                        <div className="board-card-face board-card-front">
+                          <img src={card.src} alt={`card ${card.num}`} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
           })}
         </div>
 
@@ -812,7 +844,6 @@ function RevealStage({ spreadKey, layout, cards, topic, luckyNumber, branches, n
       </div>
 
       <div className="reveal-actions">
-        {!allFlipped && <button className="btn ghost" onClick={flipAll}>一次全部翻開</button>}
         <button className="btn lg" onClick={downloadImage} disabled={downloading}>
           {downloading ? "產生圖片中⋯" : "儲存結果"}
         </button>
@@ -823,7 +854,7 @@ function RevealStage({ spreadKey, layout, cards, topic, luckyNumber, branches, n
       </div>
 
       <div className="reveal-tip">
-        ⓘ 抽完之後，請<strong>下載這張圖</strong>傳給小玩，小玩會在 {spreadKey === "one" ? "3–5" : "5–7"} 天內把完整解析回給你
+        ⓘ 抽完之後，請<strong>下載這張圖</strong>傳給小玩，<br className="br-mobile" />小玩會在 {spreadKey === "one" ? "3–5" : "5–7"} 天內把完整解析回給你
       </div>
     </div>);
 
