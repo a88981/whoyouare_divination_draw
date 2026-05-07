@@ -490,7 +490,7 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
               const n = parseInt(v, 10);
               if (!isNaN(n)) setLuckyNumber(String(Math.max(1, Math.min(99, n))));
             }}
-            placeholder="07" />
+            placeholder="0" />
             </div>
           </div> :
 
@@ -520,7 +520,7 @@ function QuestionStage({ spreadKey, topic, setTopic, luckyNumber, setLuckyNumber
               const n = parseInt(v, 10);
               if (!isNaN(n)) setLuckyNumber(String(Math.max(1, Math.min(99, n))));
             }}
-            placeholder="07" />
+            placeholder="0" />
             </div>
           </div>
         }
